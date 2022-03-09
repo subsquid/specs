@@ -13,7 +13,7 @@ and markup vesting allocation for new team members from the Team funds.
 
 ## `TREASURY_ADMIN`
 
-Only accounts with this role are allowed to spend the treasury funds. This includes access to unlocked funds of Operations, Airdrop, Exchange Liquidity, Partnerships, Liquidity Mining, Infra Provider Incentives
+Only accounts with this role are allowed to spend the treasury funds. This includes access to unlocked funds of Treasury, Operations, Airdrop, Exchange Liquidity, Partnerships, Liquidity Mining, Infra Provider Incentives
 
 It DOES NOT have access to:
 
@@ -22,7 +22,7 @@ It DOES NOT have access to:
 - Strategic Round
 - Strategic Round II
 
-Each spending is subject to a clawback period during which `VETO` holders can cancel the transfer. 
+Each spending is subject to a clawback period during which `VETO` holders can  the transfer. 
 
 ## `GRANTS_ADMIN` 
 
