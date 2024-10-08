@@ -33,7 +33,7 @@ To allow some request bursts without threatening the stability, the Token bucket
 * A token is added to the bucket every _1 / R_ seconds.
 * The bucket can hold at the most _B_ tokens. If a token arrives when the bucket is full, it is discarded.
 * When a request arrives and there is at least one token in the bucket, the token is removed and the request is processed.
-* If there are no tokens left, the request is discarded as being rate limited.
+* If there are no tokens left, the request is discarded as being rate limited (with a backoff time hint).
 
 The Worker also has a limit on the number of queries being processed concurrently.
 If a new query passes the rate limit check but the query queue is full, the request is discarded with the "service overloaded" error.\
