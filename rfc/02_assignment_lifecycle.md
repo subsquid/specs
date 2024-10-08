@@ -4,21 +4,25 @@
 
 ## Publishing assignments
 
-Once generated, a single file with assignments for all the Workers is published to a persistent storage under a well-known URL. Such storage can be Cloudflare’s R2. This file contains a unique ID of this assignment.
+Once generated, a single file with assignments for all the Workers is published to a persistent storage under a unique content-addressable URL.
+Another file under a well-known URL is updated to point to that assignment URL.
 
-The URL of the assignment is considered the parameter of the Network and, at this stage, is provided with the Worker config.
+Example content of the `network-state.json`:
+```json
+{
+  "assignment": "https://metadata.sqd-datasets.io/assignment_mainnet_20241008T141245_242da92f7d6c.json.gz"
+}
+```
 
-The Workers check that URL for updates every minute and start using the new assignment as soon as it’s ready.
+The URL of the network state at this stage is provided with the Worker config.
+
+The Workers check that file for updates every minute and if it points to a new assignment, download and start using it.
 
 Portals also download this file to be able to parse [Pings](04_network_communication.md#pings) coming from Workers.
 
 > Later, to switch to IPFS storage, the assignment may be published to the IPFS and it’s hash reference will be posted to a smart contract that is polled by the Workers.
 
-
-:::info
-Note that if we replace the current Scheduler with this mechanism before migrating datasets to BitTorrent distribution, we should also take care of distributing Cloudflare signatures that allow fetching the datasets via HTTPS.
-
-:::
+> Note that if we replace the current Scheduler with this mechanism before migrating datasets to BitTorrent distribution, we should also take care of distributing Cloudflare signatures that allow fetching the datasets via HTTPS.
 
 ## Assignment format
 
@@ -98,7 +102,7 @@ The numbers in the comparison table are in millions of bytes.
 
 ## Example
 
-Sample contents of `https://metadata.sqd-datasets.io/assignment_mainnet.json.gz`:
+Sample contents of `https://metadata.sqd-datasets.io/assignment_mainnet_20241008T141245_242da92f7d6c.json.gz`:
 
 ```json
 {
