@@ -185,6 +185,7 @@ Workers receive the `RequestLogs` requests and respond with a bundle of query lo
 ```proto
 message QueryLogs {
   repeated QueryExecuted queries_executed = 1;
+  bool drained = 2;
 }
 
 message QueryExecuted {
