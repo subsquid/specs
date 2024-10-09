@@ -10,7 +10,11 @@ Another file under a well-known URL is updated to point to that assignment URL.
 Example content of the `network-state.json`:
 ```json
 {
-  "assignment": "https://metadata.sqd-datasets.io/assignment_mainnet_20241008T141245_242da92f7d6c.json.gz"
+  "network": "mainnet",
+  "assignment": {
+    "url": "https://metadata.sqd-datasets.io/assignment_mainnet_20241008T141245_242da92f7d6c.json.gz",
+    "id": "20241008T141245_242da92f7d6c"
+  }
 }
 ```
 
@@ -148,13 +152,13 @@ Sample contents of `https://metadata.sqd-datasets.io/assignment_mainnet_20241008
   ],
   "workerAssignments": {
       "12D3KooWBwbQFT48cNYGPbDwm8rjasbZkc1VMo6rCR6217qr165S": {
-          "chunksDeltas": [0, 2, 1]
+          "chunksDeltas": [0, 2, 1],
+          "status": "ok"
       },
       "12D3KooWPobpo6s1hk6c8cREUhnSRT87mXr39FpeZ3Cr2Su5czds": {
-          "chunksDeltas": [0, 1, 1, 1]
+          "chunksDeltas": [0, 1, 1, 1],
+          "status": "unreliable"
       }
   }
 }
 ```
-
-

@@ -58,7 +58,7 @@ A source of data prepared by SQD team to be distributed and used by the Network.
 
 ## [Data delivery](03_data_delivery.md)
 
-## [Network communication (WIP)](04_network_communication.md)
+## [Network communication](04_network_communication.md)
 
 ## Metadata specification (not covered)
 
