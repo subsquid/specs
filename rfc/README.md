@@ -42,11 +42,7 @@ A node that passively listens for pings being broadcasted in the Network and sto
 
 A regular process that analyzes the current Network state and distributes data chunks among the workers to achieve data availability.
 
-
-:::info
-Currently, the scheduler is a centralized and critical participant of the Network.
-
-:::
+> Currently, the scheduler is a centralized and critical participant of the Network.
 
 ## Data storage
 
@@ -62,18 +58,18 @@ A source of data prepared by SQD team to be distributed and used by the Network.
 
 ## [Data delivery](03_data_delivery.md)
 
-## [Network communication](04_network_communication.md)
+## [Network communication (WIP)](04_network_communication.md)
 
 ## Metadata specification (not covered)
 
 ## [Node (worker/portal) registration](05_node_registration.md)
 
-## [Compute units allocation and utilization (WIP)](06_compute_units_allocation.md)
+## [Compute units](06_compute_units_allocation.md)
 
 ## [Sending queries (WIP)](07_sending_queries.md)
 
 ## [Collecting query logs](08_collecting_query_logs.md)
 
-## [Logs validation (WIP)](09_logs_validation.md)
+## [Logs validation](09_logs_validation.md)
 
 ## [Distributing rewards (WIP)](10_distributing_rewards.md)
