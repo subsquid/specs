@@ -39,7 +39,7 @@ If it grows too big, we can split it into a chunk list and assignments in differ
 
 There is not much difference (5% uncompressed, 1.2% gzipped) between proto and JSON sizes, so JSON is chosen for simplicity and readability.
 
-Chunk names and file urls have a lot of repetitions, so a compression gives good results and almost fully mitigates the necessity to avoid those repetitions manually by inventing any string building patterns.
+Chunk names and file urls have a lot of repetitions, so a compression gives good results and almost fully mitigates the necessity to avoid those repetitions manually by using string building patterns.
 
 ```none
 s3://solana-mainnet-1/0221000000/0221000000-0221000649-9QgFD/balances.parquet
@@ -64,31 +64,34 @@ However, listing a single download URL per chunk and listing its files separatel
 "chunks": [
   {
     "id": "0221000000/0221000000-0221000649-9QgFD",
-    "url": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000000-0221000649-9QgFD",
-    "files": [
-      "blocks.parquet",
-      "balances.parquet",
-      "instructions.parquet",
-      "logs.parquet",
-      "rewards.parquet",
-      "token_balances.parquet",
-      "transactions.parquet"
-    ]
+    "baseUrl": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000000-0221000649-9QgFD",
+    "files": {
+      "blocks.parquet": "blocks.parquet",
+      "balances.parquet": "balances.parquet",
+      "instructions.parquet": "instructions.parquet",
+      "logs.parquet": "logs.parquet",
+      "rewards.parquet": "rewards.parquet",
+      "token_balances.parquet": "token_balances.parquet",
+      "transactions.parquet": "transactions.parquet"
+    },
+    "sizeBytes": 210104850
   },
   {
     "id": "0221000000/0221000650-0221001299-Bfz4q",
     "url": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000650-0221001299-Bfz4q",
-    "files": [
-      "blocks.parquet",
-      "balances.parquet",
-      "instructions.parquet",
-      "logs.parquet",
-      "rewards.parquet",
-      "token_balances.parquet",
-      "transactions.parquet"
-    ]
+    "files": {
+      "blocks.parquet": "blocks.parquet",
+      "balances.parquet": "balances.parquet",
+      "instructions.parquet": "instructions.parquet",
+      "logs.parquet": "logs.parquet",
+      "rewards.parquet": "rewards.parquet",
+      "token_balances.parquet": "token_balances.parquet",
+      "transactions.parquet": "transactions.parquet"
+    },
+    "sizeBytes": 203580150
   }
 ]
+
 ```
 
 The numbers in the comparison table are in millions of bytes.
@@ -109,43 +112,46 @@ Sample contents of `https://metadata.sqd-datasets.io/assignment_mainnet_20241008
   "datasets": [
     {
       "id": "czM6Ly9zb2xhbmEtbWFpbm5ldC0x",
+      "baseUrl": "https://solana-mainnet-1.sqd-datasets.io",
       "chunks": [
         {
           "id": "0221000000/0221000000-0221000649-9QgFD",
-          "url": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000000-0221000649-9QgFD",
-          "files": [
-            "blocks.parquet",
-            "balances.parquet",
-            "instructions.parquet",
-            "logs.parquet",
-            "rewards.parquet",
-            "token_balances.parquet",
-            "transactions.parquet"
-          ]
+          "baseUrl": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000000-0221000649-9QgFD",
+          "files": {
+            "blocks.parquet": "blocks.parquet",
+            "balances.parquet": "balances.parquet",
+            "instructions.parquet": "instructions.parquet",
+            "logs.parquet": "logs.parquet",
+            "rewards.parquet": "rewards.parquet",
+            "token_balances.parquet": "token_balances.parquet",
+            "transactions.parquet": "transactions.parquet"
+          },
+          "sizeBytes": 210104850
         },
         {
           "id": "0221000000/0221000650-0221001299-Bfz4q",
-          "url": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000650-0221001299-Bfz4q",
-          "files": [
-            "blocks.parquet",
-            "balances.parquet",
-            "instructions.parquet",
-            "logs.parquet",
-            "rewards.parquet",
-            "token_balances.parquet",
-            "transactions.parquet"
-          ]
+          "baseUrl": "https://solana-mainnet-1.sqd-datasets.io/0221000000/0221000650-0221001299-Bfz4q",
+          "files": {
+            "blocks.parquet": "blocks.parquet",
+            "balances.parquet": "balances.parquet",
+            "instructions.parquet": "instructions.parquet",
+            "logs.parquet": "logs.parquet",
+            "rewards.parquet": "rewards.parquet",
+            "token_balances.parquet": "https://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi.ipfs.dweb.link",
+            "transactions.parquet": "transactions.parquet"
+          },
+          "sizeBytes": 203580150
         },
         ...
       ]
     }
   ],
-  "worker_assignments": {
+  "workerAssignments": {
       "12D3KooWBwbQFT48cNYGPbDwm8rjasbZkc1VMo6rCR6217qr165S": {
-          "chunks_deltas": [0, 2, 1]
+          "chunksDeltas": [0, 2, 1]
       },
       "12D3KooWPobpo6s1hk6c8cREUhnSRT87mXr39FpeZ3Cr2Su5czds": {
-          "chunks_deltas": [0, 1, 1, 1]
+          "chunksDeltas": [0, 1, 1, 1]
       }
   }
 }
