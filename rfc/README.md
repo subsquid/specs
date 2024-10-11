@@ -66,7 +66,7 @@ A source of data prepared by SQD team to be distributed and used by the Network.
 
 ## [Compute units](06_compute_units_allocation.md)
 
-## [Sending queries (WIP)](07_sending_queries.md)
+## [Sending queries](07_sending_queries.md)
 
 ## [Collecting query logs](08_collecting_query_logs.md)
 

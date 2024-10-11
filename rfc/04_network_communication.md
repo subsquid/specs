@@ -106,7 +106,9 @@ Queries are sent from Portals to Workers in a request-response fashion.
 
 If the Portal wants to query the Worker, it uses its local cache to find the address by the peer ID.
 If the cache entry is missing, it performs the [Kademlia lookup](#kademlia-dht) and saves the discovered address to the cache.\
-It then generates a unique query ID (UUIDv4), sends a signed `Query` message and waits for the response or a timeout.
+Then is uses this address to send a direct request to the Worker.
+
+See the [sending queries](07_sending_queries.md) page for the details.
 
 ```proto
 message Query {
@@ -120,10 +122,6 @@ message Query {
   bytes signature = 7;
 }
 ```
-
-The Portal may specify the overriding `block_range` in this message to pass the original query string without modification.
-
-See [Logs validation](09_logs_validation.md) for the details about the `signature` field.
 
 ### Server: Worker
 
@@ -139,6 +137,7 @@ message QueryResult {
     OkResult ok = 2;
     ErrResult error = 3;
   }
+  optional uint32 retry_after_ms = 4;
 }
 
 message OkResult {
@@ -148,11 +147,13 @@ message OkResult {
 }
 
 message ErrResult {
-  string bad_request = 1;
-  string server_error = 2;
-  Empty too_many_requests = 3;
-  Empty server_overloaded = 4;
-  string timeout = 5;
+  oneof err {
+    string bad_request = 1;
+    string server_error = 2;
+    Empty too_many_requests = 3;
+    Empty server_overloaded = 4;
+    string timeout = 5;
+  }
 }
 
 message QueryResultSummary {
