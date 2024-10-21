@@ -13,7 +13,8 @@ Example content of the `network-state.json`:
   "network": "mainnet",
   "assignment": {
     "url": "https://metadata.sqd-datasets.io/assignment_mainnet_20241008T141245_242da92f7d6c.json.gz",
-    "id": "20241008T141245_242da92f7d6c"
+    "id": "20241008T141245_242da92f7d6c",
+    "effectiveFrom": 1728385965
   }
 }
 ```

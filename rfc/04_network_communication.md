@@ -83,7 +83,7 @@ message Ping {
 }
 
 message BitString {
-  bytes data = 1;  // varint-encoded delta-encoding
+  bytes data = 1;  // some compressed representation
 }
 ```
 
@@ -175,7 +175,8 @@ Logs Collectors discover the existing Workers using [Pings](#subscriber-logs-col
 ```proto
 message RequestLogs {
   uint64 from_timestamp_ms = 1;
-  optional string last_seen_id = 2;  // query ID of the last collected query
+  uint64 to_timestamp_ms = 2;
+  optional string last_seen_id = 3;  // query ID of the last collected query
 }
 ```
 
@@ -186,7 +187,7 @@ Workers receive the `RequestLogs` requests and respond with a bundle of query lo
 ```proto
 message QueryLogs {
   repeated QueryExecuted queries_executed = 1;
-  bool drained = 2;
+  bool has_more = 2;
 }
 
 message QueryExecuted {

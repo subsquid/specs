@@ -27,10 +27,7 @@ In the future, priorities may be automatically assigned based on the historical 
 ## Solution
 
 
-:::info
-The proposed algorithm is completely different from what is currently being used.
-
-:::
+> The proposed algorithm is completely different from what is currently being used.
 
 Basically, a combination of [this approach](https://github.com/kalabukdima/scheduler-design/blob/master/report/report.pdf) (Rendezvous hashing) with Google’s paper [“Consistent Hashing with Bounded Loads”](https://research.google/blog/consistent-hashing-with-bounded-loads/), fit in reasonable performance limitations.
 
