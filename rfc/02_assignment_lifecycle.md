@@ -108,6 +108,10 @@ The numbers in the comparison table are in millions of bytes.
 | **URL and filenames list per chunk** | - | 150 | - | **8.2** |
 | List all files’ urls | - | 383 | - | **19.4** |
 
+## Encrypted Headers
+
+In order to access the R2/S3 data source, workers have to present a number of HTTP headers. The scheduler creates these headers for workers and encodes them with PeerID-based encryption. As PeerID is basically an ed25519 public key, we use x25519 to generate an ephemeral key and Salsa to actually encrypt data. At the moment, identity is just provided alongside nonce and ciphertext, but we can use it to make the header's origin verifiable.
+
 ## Example
 
 Sample contents of `https://metadata.sqd-datasets.io/assignment_mainnet_20241008T141245_242da92f7d6c.json.gz`:
