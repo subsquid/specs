@@ -110,7 +110,7 @@ The numbers in the comparison table are in millions of bytes.
 
 ## Encrypted Headers
 
-In order to access the R2/S3 data source, workers have to present a number of HTTP headers. The scheduler creates these headers for workers and encodes them with PeerID-based encryption. As PeerID is basically an ed25519 public key, we use x25519 to generate an ephemeral key and Salsa to actually encrypt data. At the moment, identity is just provided alongside nonce and ciphertext, but we can use it to make the header's origin verifiable.
+In order to access the R2/S3 data source, workers have to present a number of HTTP headers. The scheduler creates these headers for workers and encodes them with PeerID-based encryption. As PeerID is basically an ed25519 public key, we use x25519 to generate an ephemeral key and Salsa to actually encrypt data. At the moment, identity is just provided alongside nonce and ciphertext, but we can use it to make the header's origin verifiable. As encryption deals in raw bytes, all new fields are base64-encoded.
 
 ## Example
 
@@ -156,13 +156,23 @@ Sample contents of `https://metadata.sqd-datasets.io/assignment_mainnet_20241008
     }
   ],
   "workerAssignments": {
-      "12D3KooWBwbQFT48cNYGPbDwm8rjasbZkc1VMo6rCR6217qr165S": {
-          "chunksDeltas": [0, 2, 1],
-          "status": "ok"
+      "12D3KooWNZrHgTaFxm6nNxLxCySb8oTvmNnY9v3iAzFr4xnBs2bQ": {
+          "status": "Ok",
+          "chunksDeltas": [58,1,175,1,431,1,73,1,63,1,3,1],
+          "encryptedHeaders": {
+              "identity": "Y3WaDoknK44H/trvbxtlCH1EtdCXqb1jb0fIJZ6EWnA=",
+              "nonce": "MQuTa4+7Dg9B0AfIg72YEuYJvRR69J+a",
+              "ciphertext": "iKgjyIPEq1b052OyGQgPMRygleV2YzBOiYccq/ucE7eDTKNrmG7EtjYNqWz5AZuQ99F3tVpKOq/2Nf/dU2Yc7KobxnS9eD3fvxe5y0Ozt2UWyqXj5qHxfFlmKgRwA1hl7Zv9aqpkoUG7AjepIZP87bx04CQwvnYcaIhRI8wBR04qj6r736vy2URdTHH/b8FKB4314QmOZvr4VzixDCjg2Nusau02kKw="
+          }
       },
-      "12D3KooWPobpo6s1hk6c8cREUhnSRT87mXr39FpeZ3Cr2Su5czds": {
-          "chunksDeltas": [0, 1, 1, 1],
-          "status": "unreliable"
+      "12D3KooWQdFqTQjQPKfpXZtDdvVRrRvzmAAKSpCrwumS7Wji7eyD": {
+          "status": "unreliable",
+          "chunksDeltas": [46,1,27,1,257,1,165,1,307,1,11,1],
+          "encryptedHeaders": {
+              "identity": "Y3WaDoknK44H/trvbxtlCH1EtdCXqb1jb0fIJZ6EWnA=",
+              "nonce": "MeiramDC7eqsVYdGocsD+t7jZv+oBGVN",
+              "ciphertext": "4CzSVGtzPpyrpqsZRpOWQDwPScLmlQ8gCsb/Ee4j1/PGDb2KWRy8IBzG9rLlC0CL6bZYvr7DoSWoAF822w6xA1PNUJMATJk/rRf3p5mZydzCArlwMCOm4zYo0GHs1aFhXJ4eXl2eIeN92khkLzAEhDEh8mDuz/dEhi/ZH7REqUpR66FE89YS9pLWjuIw/wmMhgv+4r9ozOzMpRojla/CkKIrMxprbaVp/5D3"
+          }
       }
   }
 }
