@@ -3,7 +3,8 @@
 ## Goals
 
 * Collect and store enough data to be able to verify the response of any query.
-* If network conditions allow for it, collect the logs for **all** executed queries from the Workers.\nThese logs will be used to calculate the rewards.
+* If network conditions allow for it, collect the logs for **all** executed queries from the Workers.
+  These logs will be used to calculate the rewards.
 
 ## Implementation
 

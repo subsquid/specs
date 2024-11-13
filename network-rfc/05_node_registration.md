@@ -6,7 +6,7 @@ A Worker has to be registered by locking 100,000 SQD in the [smart contract](htt
 
 ## Gateways (Portals)
 
-A Gateway cluster can be registered in the Network by locking at least 10,000 SQD in the [smart contract](https://github.com/subsquid/subsquid-network-contracts/blob/5f07739900de708ce03223a9163aa694356c773e/packages/contracts/src/WorkerRegistration.sol).
+A Gateway cluster can be registered in the Network by locking at least 10,000 SQD in the [smart contract](https://github.com/subsquid/subsquid-network-contracts/blob/5f07739900de708ce03223a9163aa694356c773e/packages/contracts/src/GatewayRegistry.sol#L425).
 
 After that, up to 10 peer IDs can be associated with this cluster, allowing each of them to participate in the Network as a Gateway.
 
