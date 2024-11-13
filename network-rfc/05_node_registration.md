@@ -10,6 +10,10 @@ A Gateway cluster can be registered in the Network by locking at least 10,000 SQ
 
 After that, up to 10 peer IDs can be associated with this cluster, allowing each of them to participate in the Network as a Gateway.
 
+## Service nodes
+
+There is also a list of Service nodes specified in the contract. Those nodes participate in the Network and may have special permissions (e.g., to collect worker logs). These nodes are registered manually by the SQD team.
+
 ## Whitelisting
 
 Each node on the Network periodically (how often?) reads the contracts’ states through the RPC node to get the list of peer IDs allowed to participate in the Network. The node then only accepts p2p connections from the peers on this list. All the other packets are dropped.

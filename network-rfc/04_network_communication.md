@@ -184,6 +184,8 @@ message RequestLogs {
 
 Workers receive the `RequestLogs` requests and respond with a bundle of query logs. Each log message contains the full [Query](#client-portal) (including the client signature) and some additional statistics. All the fields except the input query have the fixed size. Input query should be limited to 512 KB.
 
+Only [service nodes](./05_node_registration.md#service-nodes) are allowed to request logs from Workers.
+
 ```proto
 message QueryLogs {
   repeated QueryExecuted queries_executed = 1;
@@ -235,3 +237,5 @@ message QueryFinished {
 Logs Collectors listen for incoming query logs from Portals and store them in the DB (ClickHouse) filtering duplicates on the DB level.
 
 Later, these logs may be used for [response validation](09_logs_validation.md).
+
+Any participant on the network is allowed to subscribe to this topic and listen for client logs.
