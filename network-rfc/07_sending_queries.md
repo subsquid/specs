@@ -6,6 +6,8 @@
 * Ensure the responses can be received reliably.
 * Allow verifying responses later.
 
+The client-Portal communication is described on the [Portal API](11_portal_api.md) page.
+
 ## Implementation
 
 ### Queries
