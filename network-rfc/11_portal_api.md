@@ -2,7 +2,7 @@
 
 The portal exposes the HTTP API with the following methods
 
-#### `GET /status`
+### `GET /status`
 
 Responds with a JSON with human-readable information about the portal's state. The exact format may change.
 
@@ -28,7 +28,7 @@ Response example:
 }
 ```
 
-#### `GET /datasets`
+### `GET /datasets`
 
 Lists the existing datasets as a JSON array. See [`/metadata` endpoint](#get-datasetsdatasetmetadata) for the field description.
 
@@ -49,9 +49,13 @@ Response example:
 ]
 ```
 
-#### `GET /datasets/<dataset>/metadata`
+### `GET /datasets/<dataset>/metadata`
 
-Responds with the information describing the dataset. Notably, contains the `real_time` field, indicating whether the portal supports the real-time mode for this dataset.
+Responds with the information describing the dataset as a JSON object. Contains at least the following fields:
+- `dataset` — the default name used to reference this dataset.
+- `aliases` — an array of alternative names that can be used interchangeably with the default name, e.g., in the HTTP endpoints.
+- `real_time`, indicating whether the portal has real-time data for this dataset.
+- `start_block` — the block number of the first known block in the dataset. The client should not request any blocks below this number.
 
 Response example:
 ```json
@@ -63,99 +67,80 @@ Response example:
 }
 ```
 
-#### `GET /datasets/<dataset>/state`
+### `GET /datasets/<dataset>/state`
 
-Responds with a summary of stored blocks ranges for the given dataset. May be used for displaying status in the UI.\
+Responds with a summary of stored block ranges for the given dataset. May be used for displaying network status in the UI.\
 TBD
 
-#### `POST /datasets/<dataset>/finalized-stream`
+### `POST /datasets/<dataset>/stream`
 
-Starts streaming data for the given query passed in the request body. See [Streaming API](#streaming-api).
+Accepts a [data query](https://github.com/subsquid/data/blob/f78261e3d816de1e20a38460652125d88e4a2987/crates/query/src/query/mod.rs#L15) as a JSON body and, in case of success, returns a list of matching blocks.
 
-#### `GET /datasets/<dataset>/finalized-stream/height`
+Data query (among other options) has the following fields:
 
-Responds with a single decimal number — the highest number of the block available to be served by the `/finalized-stream` endpoint.\
-Note that the first available block is not always 0.
+* `fromBlock` — the number of the first block to fetch (required)
+* `toBlock` — the number of the last block to fetch (inclusive) (optional)
+* `parentBlockHash` — expected hash of the parent of the first requested block (optional).
 
-#### `POST /datasets/<dataset>/stream`
-
-Same as [`/finalized-stream`](#post-datasetsdatasetfinalized-stream) but with the [real-time mode](#real-time-mode) support.
-
-#### `POST /datasets/<dataset>/stream/height`
-
-Responds with a single decimal number — the highest number of the block available to be served by the `/stream` endpoint.\
-Note that the first available block is not always 0.
-
-### Deprecated endpoints
-
-These endpoints are preserved for compatibility with the old clients and should not be used.
-
-#### `GET /datasets/<dataset>/height`
-
-Same as `/datasets/<dataset>/finalized-stream/height`
-
-#### `GET /datasets/<dataset>/<start_block>/worker`
-
-Gets the worker url for querying the dataset starting from the given block.
-
-#### `GET /datasets/<base64_id>/query/<worker_id>`
-
-Sends the query to the worker. The query is passed in the request body.
-
-## Streaming API
-
-The following applies to the [`/finalized-stream`](#post-datasetsdatasetfinalized-stream) and [`/stream`](#post-datasetsdatasetstream) endpoints.
-
-### Request
-
-The request body is a JSON query following the [SQD query format](https://docs.sqd.ai/subsquid-network/reference/evm-api/).
-
-The client **should** pass the following request headers:
+The client **should** pass the following request headers.
 - `Content-Type: application/json`
 
-The client **may** pass the following request headers:
-- `Accept-Encoding`: one of `gzip` or `deflate`. If omitted, the response will be decompressed by the nginx making streaming less efficient. Once implemented, the `deflate` option should be preferred to avoid decompression.
+The client **may** pass the following request headers.
+- `Accept-Encoding: gzip`. If omitted, the response will be decompressed by Nginx, making streaming less efficient.
+- `Content-Encoding: gzip`, if the request body is compressed.
 
-### Response
+> TODO: allow setting custom finality confirmation.
 
-The response is a stream of JSON objects in [JSON Lines](https://jsonlines.org/) format, each representing a block. The response may be empty (with `204` status code) indicating that no blocks are available for the given range yet.
+This endpoint can produce the following responses, differentiated by HTTP status.
 
-Upon receiving the request, the portal starts streaming the blocks from `fromBlock` in the order of increasing block numbers. The portal may return any number of blocks before terminating the stream. Due to the streaming nature of the HTTP protocol, it's not possible to communicate the reason of termination to the client. Whenever a successful non-empty response has been received, the client should check the last returned block number and send a follow-up request if more blocks are needed.
+#### 200 OK
 
-Aside from the blocks explicitly requested by the query, the response always contains the first and the last block of the scanned range. It may also contain additional blocks not requested by the client.
+A list of blocks in the form of [gzipped](https://www.rfc-editor.org/rfc/rfc1952) [JSON lines](https://jsonlines.org/) body, with each JSON object representing a block.
 
-If a block `N` was included in the response, it is guaranteed that all the existing blocks on the simple path (in terms of block chain) from the `fromBlock` (from the query) to `N` matching the query are also included in the response.
+The portal may return any number of blocks before terminating the stream. Due to the streaming nature of the HTTP protocol, it's not possible to communicate the reason of termination to the client. Clients are supposed to check the `number` (and `hash`) of the last returned block and to send subsequent requests if more blocks are needed.
 
-### Status codes
+The returned list may contain blocks that don't match the query filters. They are added to designate the chain scanning progress.
+In particular, the first existing block with `block.number >= query.fromBlock` is always included. For every blockchain, except for Solana, the above condition can be replaced with equality, i.e., `first_returned_block.number == query.fromBlock`.
 
-| Reason | HTTP Code | Details |
-|-|-|-|
-| Internal error (crash) during request handling | `500` | The request should not be retried because it may be causing the error |
-| The data chunk exists, but no worker is ready to serve it | `503` | The request should be retried later |
-| All the workers rate limited this portal | `429` | Should be retried after the specified delay |
-| The query is invalid | `400` | The request should not be retried |
-| The dataset is not found | `404` | The client should only request datasets from the list returned by `/datasets` |
-| Invalid endpoint | `404` | |
-| The `fromBlock` is above the last known block | `204` | Those blocks may be present later. It's up to the client to decide how often to check for updates. |
-| The requested block range falls into the dataset range, but doesn't contain any blocks | `200` | Some chains may have gaps in the numbering. The request should not be retried in this case — no blocks will ever appear for such range. |
-| The first requested block is below the beginning of the dataset range | `400` | The client should make sure the requested range is within the dataset range |
-| The `parentBlockHash` in the request doesn't match the current parent hash for the given `fromBlock` | `409` | See below |
+Blocks in the list are guaranteed to be sequentially ordered and to belong to the same chain.
 
-In case of the `503` and `429` codes there may be an additional `Retry-After` header indicating the number of seconds to wait before retrying the request.
+If some block `block` has been included in the response, it is also guaranteed that all the existing blocks on the chain from `query.fromBlock` to `block` matching the query are also included in the response (no matching blocks are skipped).
 
-### Handling reorgs (forks)
+The list of blocks may only be empty if all the following conditions are met:
+- the requested dataset is Solana,
+- the data query has a bounded range (both `query.fromBlock` and `query.toBlock` were specified),
+- the entire range of blocks requested by the query has been [skipped](https://solana.com/docs/terminology#skipped-slot).
 
-Historical blockchain data is easy to deal with because one can assume that blocks are ordered sequentially and there is only one block for the given height (block number). However, when getting close to the blockchain head, the client has to consider the possibility of chain reorgs.
+If `query.parentBlockHash` has been specified, it is also guaranteed that `first_returned_block.parent_hash == query.parentBlockHash`.
 
-As a hint about the finalization point, the portal exposes the `/finalized-head` endpoint. It responds with the last block which should be considered "final" meaning that it's unlikely to be reverted. For some datasets it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take actions to resolve it automatically, and should signal the error to the user instead.
+#### 204 No Content
 
-The portal additionally adds the `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers to each successful response to save additional requests.
+No content response, indicating that the range of blocks requested by the query lies entirely above the latest block available in the dataset.
 
-With each consequent request to the `/stream`, the client should specify the `parentBlockHash` query field with the known parent hash of the first requested block. The portal will check whether the hash matches the parent hash of the current block number `fromBlock`. If it doesn't, the portal will respond with the `409` error and the list of the previous blocks on the path to the current head. In this case, the client should re-request the blocks starting from the last known ancestor. If no common ancestor was found (chains diverged too much), the client should repeat the procedure for the preceding blocks until the common ancestor is found.
+If real-time data is enabled for the dataset, the portal waits up to 5 seconds for the arrival of new blocks before returning `204`.
 
-If the hashes match, the portal starts streaming the blocks on the path from the `fromBlock` to the current head. As soon as the block returned in the stream is no longer on the path to the head, the stream is terminated and the procedure repeats.
+#### Finalized head headers
 
-An example of 409 response:
+Both `200` and `204` responses may include `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers indicating the `number` and the `hash` of the latest finalized (unlikely to be reversed) block available in the dataset.
+
+For every returned `block` and `block` designated by `query.parentBlockHash`, it is guaranteed that
+
+1. `X-Sqd-Finalized-Head-Hash` is a child of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
+2. `X-Sqd-Finalized-Head-Hash` is a parent of block, when `block.number >= X-Sqd-Finalized-Head-Number`
+
+For some datasets, it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take any actions to resolve it automatically and should signal the error to the user instead.
+
+#### 409 Conflict
+
+This response indicates that the `parentHash` of the first block requested by the query does not match `query.parentBlockHash`.
+
+Endpoint returns a JSON object with a single `lastBlocks` array — a list of previous blocks that belong to the current chain.
+
+The list contains `{number, hash}` pairs and may have an arbitrary length, but is guaranteed to contain at least the parent of the first requested block.
+
+In this case, the client should re-request the blocks starting from the last known ancestor. If no common ancestor has been found (chains diverged too much), the client should request the previous blocks until a common ancestor is found.
+
+**Response example:**
 ```json
 {
   "lastBlocks": [
@@ -174,3 +159,71 @@ An example of 409 response:
   ]
 }
 ```
+
+#### 400 Bad Request
+
+Possible causes:
+- the request headers or body encoding are incorrect,
+- the query is invalid (the response body contains the error message in this case),
+- the `fromBlock` is below the dataset's `start_block`.
+
+In any case, the client should not retry the request.
+
+#### 404 Not Found
+
+Possible causes:
+- a wrong endpoint has been requested,
+- the dataset has not been found.
+
+#### 429 Too Many Requests
+
+The client has exceeded the rate limit. The client should retry the request later. The rate limit may be increased by allocating more [compute units](./06_compute_units_allocation.md) to the portal.
+
+The response may include the `Retry-After` header indicating the number of seconds to wait before retrying the request.
+
+#### 503 Service Unavailable
+
+The server could not process the request at the moment. The client should retry the request later.
+
+The response may include the `Retry-After` header indicating the number of seconds to wait before retrying the request.
+
+#### 500 Internal Server Error
+
+The server failed to process the request. The client should not retry the request because it may be causing the error.
+
+### `GET /datasets/<dataset>/finalized-head`
+
+Returns JSON object with `.number` and `.hash` of the highest finalized block available in the dataset. When no finalized block is available, returns _`null`_.
+
+This endpoint is supposed to be used for diagnostic purposes.
+
+### `GET /datasets/<dataset>/head`
+
+Returns JSON object with `.number` and `.hash` of the highest block available in the dataset. When no block is available, returns _`null`_.
+
+This endpoint is supposed to be used for diagnostic purposes.
+
+## Deprecated endpoints
+
+These endpoints are preserved for compatibility with the old clients and should not be used.
+
+### `POST /datasets/<dataset>/finalized-stream`
+
+Older streaming API without support for handling rollbacks. This endpoint doesn't accept the `parentBlockHash` query field and never returns unfinalized data.
+
+### `GET /datasets/<dataset>/finalized-stream/height`
+
+Responds with a single decimal number — the highest number of the block available to be served by the `/finalized-stream` endpoint.\
+Note that the first available block is not always 0.
+
+### `GET /datasets/<dataset>/height`
+
+Same as `/datasets/<dataset>/finalized-stream/height`
+
+### `GET /datasets/<dataset>/<start_block>/worker`
+
+Gets the worker URL for querying the dataset starting from the given block.
+
+### `GET /datasets/<base64_id>/query/<worker_id>`
+
+Sends the query to the worker. The query is passed in the request body.
