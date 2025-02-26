@@ -123,10 +123,10 @@ If real-time data is enabled for the dataset, the portal waits up to 5 seconds f
 
 Both `200` and `204` responses may include `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers indicating the `number` and the `hash` of the latest finalized (unlikely to be reversed) block available in the dataset.
 
-For every returned `block` and `block` designated by `query.parentBlockHash`, it is guaranteed that
+Every returned `block` and `block` designated by `query.parentBlockHash` is guaranteed to belong to the same chain with the finalized head block. In particular:
 
-1. `X-Sqd-Finalized-Head-Hash` is a child of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
-2. `X-Sqd-Finalized-Head-Hash` is a parent of block, when `block.number >= X-Sqd-Finalized-Head-Number`
+1. `X-Sqd-Finalized-Head-Hash` is a descendant of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
+2. `X-Sqd-Finalized-Head-Hash` is an ancestor of `block`, when `block.number >= X-Sqd-Finalized-Head-Number`
 
 For some datasets, it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take any actions to resolve it automatically and should signal the error to the user instead.
 
@@ -134,7 +134,7 @@ For some datasets, it's not possible to guarantee finality for sure, but if the 
 
 This response indicates that the `parentHash` of the first block requested by the query does not match `query.parentBlockHash`.
 
-Endpoint returns a JSON object with a single `lastBlocks` array — a list of previous blocks that belong to the current chain.
+The response body is a JSON object with a single `previousBlocks` array — the list of previous blocks that belong to the current chain.
 
 The list contains `{number, hash}` pairs and may have an arbitrary length, but is guaranteed to contain at least the parent of the first requested block.
 
@@ -143,7 +143,7 @@ In this case, the client should re-request the blocks starting from the last kno
 **Response example:**
 ```json
 {
-  "lastBlocks": [
+  "previousBlocks": [
     {
       "number": 21780872,
       "hash": "0xf6a96a29423093e947960fcde3cf79730eadacd389fe2ed6cd1c97deb356a12e"
@@ -191,11 +191,9 @@ The response may include the `Retry-After` header indicating the number of secon
 
 The server failed to process the request. The client should not retry the request because it may be causing the error.
 
-### `GET /datasets/<dataset>/finalized-head`
+### `POST /datasets/<dataset>/finalized-stream`
 
-Returns JSON object with `.number` and `.hash` of the highest finalized block available in the dataset. When no finalized block is available, returns _`null`_.
-
-This endpoint is supposed to be used for diagnostic purposes.
+Same as `/datasets/<dataset>/stream`, but only returns the finalized blocks. The notion of finality here is up to the implementation and may vary between datasets. The current implementation only returns the blocks obtained from the SQD Network.
 
 ### `GET /datasets/<dataset>/head`
 
@@ -203,13 +201,15 @@ Returns JSON object with `.number` and `.hash` of the highest block available in
 
 This endpoint is supposed to be used for diagnostic purposes.
 
+### `GET /datasets/<dataset>/finalized-head`
+
+Returns JSON object with `.number` and `.hash` of the highest finalized block available in the dataset. When no finalized block is available, returns _`null`_.
+
+This endpoint is supposed to be used for diagnostic purposes.
+
 ## Deprecated endpoints
 
 These endpoints are preserved for compatibility with the old clients and should not be used.
-
-### `POST /datasets/<dataset>/finalized-stream`
-
-Older streaming API without support for handling rollbacks. This endpoint doesn't accept the `parentBlockHash` query field and never returns unfinalized data.
 
 ### `GET /datasets/<dataset>/finalized-stream/height`
 
