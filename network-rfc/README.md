@@ -73,3 +73,5 @@ A source of data prepared by SQD team to be distributed and used by the Network.
 ## [Logs validation](09_logs_validation.md)
 
 ## [Distributing rewards (WIP)](10_distributing_rewards.md)
+
+## [Portal API](11_portal_api.md)
