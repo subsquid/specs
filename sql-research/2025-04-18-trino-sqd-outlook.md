@@ -71,15 +71,19 @@ Since I could not yet find an example that corresponds directly to our use case,
 
 * There is in particular the issue of fault tolerance. With the coordinator the architecture introduces a single point of failures. Documents claim that this issue was addressed, but it is not clear to me, how it was addressed. Some more investigation is needed!
 
-* We have to rethink reusability; the data sources needed to be designed so that they can additionally serve as the main query engine;
+* Trino needs additional resources, in particular the coordinator and worker nodes, while, with the DuckDB approach, the client takes the role of coordinator and workers (for joining, sorting, etc.) 
 
-* Java is clearly drawback - it introduces an entirely different ecosystem that must be managed by the team, some Java expertise is necessary to implement the interfaces to external data sources and the GC introduces issues of time predictability. 
+* We have to rethink reusability; the data sources need to be designed so that they can additionally serve as the main query engine;
+
+* Java is clearly a drawback - it introduces an entirely different ecosystem that must be managed by the team, some Java expertise is necessary to implement the interfaces to external data sources and the GC introduces issues of time predictability. 
 
 ### Advantages of the DuckDB Extension
 
 * We control the engine as a whole, design decisions remain in our hand;
 
 * The development of the extension as such may be less work than implementing the Trino APIs (but the extension alone is not yet the query engine, see below);
+
+* No additional resources are needed; the client is coordinator and workhorse for joining, sorting, etc.;
 
 * C++ is much more predictable in terms of processing time;
 
