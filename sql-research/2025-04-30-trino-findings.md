@@ -31,7 +31,7 @@ I mainpulated the code
 
 * to provide data related to those metadata.
 
-Trino organises metadata in catalogs which are provides by plugins. Each catalogs contains one or more schemas which, in turn, contain tables, _eg._:
+Trino organises metadata in catalogs which are provided by plugins. Each catalogs contains one or more schemas which, in turn, contain tables, _eg._:
 
 ```
 trino> show catalogs;
@@ -57,7 +57,7 @@ trino> show tables from sqd.solana;
 (1 row)
 ```
 
-The catalog is available with the plugin. Schemas are made available through an interface listing the schemas:
+The catalog is available with the plugin itself. Schemas are made available through an interface listing the schemas:
 
 ``` 
 public static final String SCHEMA_NAME = "solana"; // it's just harcoded
@@ -156,7 +156,10 @@ The data would be generated through an RPC interface to one of our workers and t
 ## Results
 The code shown above implements the main interfaces Trino requires from the plugin. Two more interfaces need to be implemented:
 
-* The pushdown mechanism (implemented as part of the Metadata interface, that accepts or rejects pushdowns for filtering, projection, sorting and so on)
+* The pushdown mechanism (implemented as part of the Metadata interface, that accepts or rejects pushdowns for limit, filtering, projection, sorting and so on)
 
-* The `SplitManager` that breaks down a table into its partitions, _ie._, to chunks.
+* The `SplitManager` that breaks down a table into partitions, _ie._, into chunks.
 
+In particular the pushdown mechanism is more involved than the basic functions presented above. However, there are many code examples available in existing custom and standard plugins.
+
+Overall, I estimate the effort to implement a Trino plugin for SQD to about four weeks including pushdowns for limit, filtering and projection and for familiarising myself with the required and recommended Java libraries. There is, of course, more effort related to integrating the plugin with the SQD architecture, portal and workers. 
