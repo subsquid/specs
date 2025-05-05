@@ -43,7 +43,6 @@ Response example:
   {
     "dataset": "solana-mainnet",
     "aliases": [],
-    "start_block": 250000000,
     "real_time": true
   },
 ]
