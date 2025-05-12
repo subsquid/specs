@@ -92,12 +92,11 @@ The additional effort for the test battery of the first iteration will be about 
 The overall effort for the first iteration amounts to 9 weeks. For the timeline I consider additional tasks for myself including network tasks and additional research.
 
 | Task      | Effort (h) | Finished | Milestone | Comment                     |
-|-----------|------------|----------|-----------| ----------------------------|
+|-----------|-----------:|----------|-----------| ----------------------------|
 | Attach    |         40 | 23/05/25 | M1        |                             |
 | DevEnv    |         80 | 27/06/25 | M2        | iteratively with QueryPlan  |
 | QueryPlan |        160 | 18/07/25 | M3        | iteratively with DevEnv     |
 | Testing   |         80 | 31/07/25 | M4        | iteratively with all others |
-|-----------|------------|----------|-----------|-----------------------------|
 | Overall   |        360 | 31/07/25 |           |                             |
 
 ### Milestones
