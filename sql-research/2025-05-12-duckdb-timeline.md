@@ -91,13 +91,13 @@ The additional effort for the test battery of the first iteration will be about 
 
 The overall effort for the first iteration amounts to 9 weeks. For the timeline I consider additional tasks for myself including network tasks and additional research.
 
-| Task      | Effort (h) | Finished | Milestone | Comment                     |
-|-----------|-----------:|----------|-----------| ----------------------------|
-| Attach    |         40 | 23/05/25 | M1        |                             |
-| DevEnv    |         80 | 27/06/25 | M2        | iteratively with QueryPlan  |
-| QueryPlan |        160 | 18/07/25 | M3        | iteratively with DevEnv     |
-| Testing   |         80 | 31/07/25 | M4        | iteratively with all others |
-| Overall   |        360 | 31/07/25 |           |                             |
+| Task      | Effort (h) | Finished | Milestone | Comment                     | Achieved |
+|-----------|-----------:|----------|-----------| ----------------------------|----------|
+| Attach    |         40 | 23/05/25 | M1        |                             | 23/05/25 |
+| DevEnv    |         80 | 27/06/25 | M2        | iteratively with QueryPlan  |          |
+| QueryPlan |        160 | 18/07/25 | M3        | iteratively with DevEnv     |          |
+| Testing   |         80 | 31/07/25 | M4        | iteratively with all others |          |
+| Overall   |        360 | 31/07/25 |           |                             |          |
 
 ### Milestones
 
@@ -105,7 +105,8 @@ The overall effort for the first iteration amounts to 9 weeks. For the timeline 
 
 1. DuckDB extension queries data according to metadata
 
-2. DuckDB extension materialises data locally
+~2. DuckDB extension materialises data locally~
+Comment: This cannot be M1 because we need data (coming from workers); therefore it is moved to M2.
 
 #### M2
 
@@ -114,6 +115,8 @@ The overall effort for the first iteration amounts to 9 weeks. For the timeline 
 2. DuckDB extension uses the metadata from the server
 
 3. Server sends queried data from Parquet files (M3.3 required)
+
+4. DuckDB extension receives (and, if necessary, materialises) the data 
 
 #### M3
 
