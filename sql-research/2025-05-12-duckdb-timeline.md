@@ -94,8 +94,8 @@ The overall effort for the first iteration amounts to 9 weeks. For the timeline 
 | Task      | Effort (h) | Finished | Milestone | Comment                     | Achieved |
 |-----------|-----------:|----------|-----------| ----------------------------|----------|
 | Attach    |         40 | 23/05/25 | M1        |                             | 23/05/25 |
-| DevEnv    |         80 | 27/06/25 | M2        | iteratively with QueryPlan  |          |
-| QueryPlan |        160 | 18/07/25 | M3        | iteratively with DevEnv     |          |
+| DevEnv    |         80 | 27/06/25 | M2        | iteratively with QueryPlan  | 09/07/25 |
+| QueryPlan |        160 | 18/07/25 | M3        | iteratively with DevEnv     | 09/07/25 |
 | Testing   |         80 | 31/07/25 | M4        | iteratively with all others |          |
 | Overall   |        360 | 31/07/25 |           |                             |          |
 
@@ -103,37 +103,39 @@ The overall effort for the first iteration amounts to 9 weeks. For the timeline 
 
 #### M1
 
-1. DuckDB extension queries data according to metadata
+1. [X] DuckDB extension queries data according to metadata
 
 ~2. DuckDB extension materialises data locally~
-Comment: This cannot be M1 because we need data (coming from workers); therefore it is moved to M2.
+Comment: This cannot be M1 because we need data (coming from workers); ~therefore it is moved to M2~.
+Comment: Since users can simply create tables from select, this goal is not urgent. It can be done later.
 
 #### M2
 
-1. Server sends metadata to DuckDB extension
+1. [X] Server sends metadata to DuckDB extension
 
-2. DuckDB extension uses the metadata from the server
+2. [X] DuckDB extension uses the metadata from the server
 
-3. Server sends queried data from Parquet files (M3.3 required)
+3. [X] Server sends queried data from Parquet files (M3.3 required)
 
-4. DuckDB extension receives (and, if necessary, materialises) the data 
+4. [X] DuckDB extension receives ~(and, if necessary, materialises)~ the data 
 
 #### M3
 
-1. DuckDB extension transforms DuckDb plan to substrait plan
+1. [X] DuckDB extension transforms DuckDb plan to substrait plan
 
-2. DuckDB extension extracts subplan and sends it to the server
+2. [X] DuckDB extension extracts subplan and sends it to the server
 
-3. Server transforms substrait plan to Polars expressions and executes them over Parquet files 
+3. [X] Server transforms substrait plan to Polars expressions and executes them over Parquet files
+Comment: More has been done, in fact. The server is already split into portal and worker code. The portal code rewrites the plan, i.e. it extracts the parts that are relevant for workers and sends them back to the extension per table and worker. 
 
 #### M4
 
-1. Test Battery exercises functionality of DuckDB extension
+1. [ ] Test Battery exercises functionality of DuckDB extension
 
-2. Test Battery exercises functionality of DuckDB extension and Server in tandem
+2. [ ] Test Battery exercises functionality of DuckDB extension and Server in tandem
 
-3. Test Battery exercises
+3. [ ] Test Battery exercises
    
-   * Projection (asterisk, field lists in various orders, aliases, constants, expressions, scalar functions)
+   * [ ] Projection (asterisk, field lists in various orders, aliases, constants, expressions, scalar functions)
 
-   * Filter with complex conditions (and, or, not, between, in, parentheses, etc)
+   * [ ] Filter with complex conditions (and, or, not, between, in, parentheses, etc)
