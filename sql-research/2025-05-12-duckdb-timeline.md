@@ -106,8 +106,9 @@ The overall effort for the first iteration amounts to 9 weeks. For the timeline 
 1. [X] DuckDB extension queries data according to metadata
 
 ~2. DuckDB extension materialises data locally~
-Comment: This cannot be M1 because we need data (coming from workers); ~therefore it is moved to M2~.
-Comment: Since users can simply create tables from select, this goal is not urgent. It can be done later.
+
+**Comment:** This cannot be M1 because we need data (coming from workers); ~therefore it is moved to M2~.
+Since users can simply create tables from select, this goal is not urgent. It can be done later.
 
 #### M2
 
@@ -125,8 +126,9 @@ Comment: Since users can simply create tables from select, this goal is not urge
 
 2. [X] DuckDB extension extracts subplan and sends it to the server
 
-3. [X] Server transforms substrait plan to Polars expressions and executes them over Parquet files
-Comment: More has been done, in fact. The server is already split into portal and worker code. The portal code rewrites the plan, i.e. it extracts the parts that are relevant for workers and sends them back to the extension per table and worker. 
+3. [X] Server transforms substrait plan to Polars expressions and executes them over Parquet files.
+
+**Comment:** More has been done, in fact. The server is already split into portal and worker code. The portal code rewrites the plan, i.e. it extracts the parts that are relevant for workers and sends them back to the extension per table and worker. 
 
 #### M4
 
