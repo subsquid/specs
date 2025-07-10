@@ -95,3 +95,23 @@ The subplans are sent back to the extension from where they are finally posted t
 - Note timestamp!
 
 ## Roadmap
+
+| Task                  | Where? | Effort (h) | Finished | Milestone | Owner | Comment                     | Achieved |
+|-----------------------|--------|-----------:|----------|-----------|-------|-----------------------------|----------|
+| Code Improvement      | X      |            | 31/07/25 | M-1       | TS    |                             |          |
+| Filter pushdown       | X+P+W  |            | 15/08/25 | M-2       | TS    |                             |          |
+| Worker integration    | W      |            | 15/08/25 | M-3       | DK    |                             |          |
+| Arrow not JSON        | X+W    |            | 31/08/25 | M-4       | TS    |                             |          |
+| SQL completion        | X      |            | 15/09/25 | M-5       | TS    |                             |          |
+| Substrait not SQL     | X+P    |            | 30/09/25 | M-6       | TS    |                             |          |
+| Portal integration    | P      |            | 30/09/25 | M-7       | DK    |                             |          |
+| More testing          | X+P+W  |            | 15/10/25 | M-8       | TS    |                             |          |
+| Retry                 | X      |            | 30/10/25 | M-9       | TS    |                             |          |
+| Multi-threaded Scan   | X      |            | 30/10/25 | M-10      | TS    |                             |          |
+| Minor optimisations   | X+P+W  |            | 15/11/25 | M-11      | TS    |                             |          |
+| Experimental roll-out | X+P+W  |            | 30/11/25 | M-12      | DK    |                             |          |
+| Special functions     | X+P+W  |            | 30/11/25 | M-13      | TS    |                             |          |
+| Local joins           | X+P+W  |            | N/A      | N/A       | N/A   |                             |          |
+| Overall               |        |            | 01/12/25 |           |       |                             |          |
+
+### Milestones
