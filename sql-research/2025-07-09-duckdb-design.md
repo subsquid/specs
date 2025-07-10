@@ -28,7 +28,7 @@ The following diagram shows the overall interaction of these components in proce
 <p align="center">
  <img src="attachments/sql-engine-2.png"
   alt="Squid Query Engine"
-  width="75%"/>
+  width="65%"/>
 </p>
 
 The first important entity to note is the user in the top-left corner of the diagram. Without users that actually see an advantage in the engine for their work, there won't be an engine.
@@ -52,7 +52,7 @@ A scanner extension is basically a description of the work share between the sta
 <p align="center">
  <img src="attachments/qplan-1.png"
   alt="A Query Plan"
-  width="75%"/>
+  width="65%"/>
 </p>
 
 Most tasks, like grouping for example, are performed by the DuckDB query engine. The only task that is exclusively performed by the scanner extension is to produce data for the external data source. This, obviously, is inefficient for most case. The scanner would always produce all columns of all rows of the data source. The projection is therefore *pushed down* to the data source to reduce the columns, and filters, *i.e.* parts of the *where* condition, are pushed down to reduce the number of rows. For a data lake this essential, otherwise any query would produce billions of rows. Joins, likewise, act as implicit mutual filters for the tables involved and should be made explicit and then applied at the source.
@@ -62,7 +62,7 @@ The Squid Scanner sends the entire plan to the portal. The portal extract the re
 <p align="center">
  <img src="attachments/qplan-2.png"
   alt="SQD Sub-Plans"
-  width="75%"/>
+  width="65%"/>
 </p>
 
 The subplans are sent back to the extension from where they are finally posted to workers. At the moment only projections are extracted from the plan. We still have to implement the filter pushdown. In the future joins should also be considered. The next section will discuss both aspects in more detail.
