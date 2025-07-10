@@ -68,15 +68,122 @@ The Squid Scanner sends the entire plan to the portal. The portal extract the re
 The subplans are sent back to the extension from where they are finally posted to workers. At the moment only projections are extracted from the plan. We still have to implement the filter pushdown. In the future joins should also be considered. The next section will discuss both aspects in more detail.
 
 ## DuckDB Extension
+
+The DuckDB extension has two main parts: *catalog* management and the *scanner*. The first makes SQD metadata available to DuckDB as catalog interface, the second implements the query engine described in the previous sections.
+
 ### Catalog
 
+DuckDB, like other relational databases, has a three-level data dictionary consisting of
+
+* Catalog, the top level entry of a database's data dictionary;
+
+* Schema, organising subsets in a catalog;
+
+* Schema Entry, any database object like tables, types, views, stored procedures and so on within a schema.
+
+The SQD extension implements the *attach* function that *attaches* an external resource to DuckDB. The function posts a request for metadata to the metadata server, part of the Portal. The pmetadata server answers with JSON document describing all available datasets as schemas including their entries. This is an example:
+
+```json
+{
+    "name": "solana_mainnet",
+    "tables": [
+        {
+            "name": "block",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "number",
+                        "type": "integer",
+                        "nullable": false
+                    },
+                    {
+                        "name": "hash",
+                        "type": "varchar",
+                        "nullable": false
+                    },
+                    ...
+                ]
+            },
+            "partitionKey": [
+               ...
+            ],
+            "chunks": [
+               ...
+            ],
+            "stats": {
+                "approx_num_rows": 1024
+            }
+        },
+        ...
+    }]
+}
+``` 
+
+Currently, metadata are defined in a static file that is loaded by the portal (in fact: compiled into the code) and send as response to the metadata endpoint. In the future, a more dynamic approach will be needed to reflect frequently changing information like stats and chunks. Statistics are needed to report progress to DuckDB and, in the future, to implement more sophisticated optimisations.
+
+Once the SQD network is attached, DuckDB makes all this information available through the normal catalog facilities, *e.g.*:
+
+```sql
+select * from information_schema.schemata where catalog_name = 'sqd';
+```
+
+| catalog_name | schema_name            | schema_owner | ... | 
+|--------------|------------------------|--------------|-----|
+| sqd          | etherum_sepolia_1      | duckdb       | ... |
+| sqd          | hyperliquid_testnet_4  | duckdb       | ... |
+| sqd          | solana_mainnet         | duckdb       | ... |
+
+```sql
+select * from information_schema.tables where table_catalog = 'sqd' and table_schema = 'solana_mainnet';
+```
+
+| table_catalog | table_schema   | table_name   | ... | 
+|---------------|----------------|--------------|-----|
+| sqd           | solana_mainnet | block        | ... |
+| sqd           | solana_mainnet | transaction  | ... |
+| ...           | ...            | ...          | ... |
+
+```sql
+desc sqd.solana_mainnet.block;
+```
+
+| column_name | column_type | ... | 
+|-------------|-------------|-----|
+| number      | INTEGER     | ... |
+| hash        | VARCHAR     | ... |
+| ...         | ...         | ... |
+
 ### Scanner
+
+The scanner works in tandem with the DuckDB query engine. It is invoked for every attached resource used within a query which, for the SQD network, is always a table. The following diagram adds some more detail:
 
 <p align="center">
  <img src="attachments/squid-scanner.png"
   alt="Squid Scanner"
   width="75%"/>
 </p>
+
+The main interface between DuckDB and the scanner is the scanner state. The internal design of this object is defined by the extension, the life cycle, however, is managed by DuckDB, which calls functions to create and initialise the state and to invoke the scanner with a state object. There is one such state per SQD table that appears in the query.
+
+Just for illustration, the initialiser and the scanner have the following signatures:
+```cpp
+unique_ptr<GlobalTableFunctionState> SquidInitGlobalState(ClientContext &context, TableFunctionInitInput &input);
+void SquidScan(ClientContext &context, TableFunctionInput &data, DataChunk &output) {
+```
+
+where `TableFunctionInput` contains the previously created `GlobalTableFunctionState` and `DataChunk` is the interface through which DuckDB receives the scanned data.
+
+The first time the initialiser is invoked, the extension sets up the overall query state valid for all SQD scans in the scope of this specific query. During this initialisation, the extension is completely locked. No concurrent initialiser can overtake the first and set up an alternative truth. Once the query state is set, initialisers pass and pick up the resources that correspond to the table for which they are responsible. The query state contains (among others) the follow resources:
+
+* Open connections to all workers
+
+* Data that would enable a scanner to retry a connection in case of failure (URL and query plan)
+
+* The projection: a list of columns, their types and positions in the output. 
+
+During the initialisation process, the initialiser extracts the query plan from the DuckDB `client context`, transforms and serialises it and sends it to the portal. The response, as already discussed above, consists of the subplans for all tables, which are then posted to the workers resulting.
+
+One qualification concerning the current state: the portal does not send, in fact, query plans but rather SQL strings. The reason for that is merely pragmatic. The `C++` substrait library which is used as a starting point is very immature. Already now it poses restrictions on the SQL functionality we can support. Before extending the use of this library, namely for incoming substrait plans, I want to make sure that it is complete and sufficiently robust. That, however, is a two-weeks effort.
 
 ### Implementation Details
 - curl
@@ -109,9 +216,10 @@ The subplans are sent back to the extension from where they are finally posted t
 | Retry                 | X      |            | 30/10/25 | M-9       | TS    |                             |          |
 | Multi-threaded Scan   | X      |            | 30/10/25 | M-10      | TS    |                             |          |
 | Minor optimisations   | X+P+W  |            | 15/11/25 | M-11      | TS    |                             |          |
-| Experimental roll-out | X+P+W  |            | 30/11/25 | M-12      | DK    |                             |          |
-| Special functions     | X+P+W  |            | 30/11/25 | M-13      | TS    |                             |          |
+| Special functions     | X+P+W  |            | 30/11/25 | M-12      | TS    |                             |          |
+| Experimental roll-out | X+P+W  |            | 15/12/25 | M-13      | DK    |                             |          |
+| Stats                 | X+P+W  |            | N/A      | N/A       | N/A   |                             |          |
 | Local joins           | X+P+W  |            | N/A      | N/A       | N/A   |                             |          |
-| Overall               |        |            | 01/12/25 |           |       |                             |          |
+| Overall               |        |            | 31/12/25 |           |       |                             |          |
 
 ### Milestones
