@@ -87,7 +87,7 @@ The SQD extension implements the *attach* function that *attaches* an external r
 attach 'http://127.0.0.1:5000' as sqd (type squid);
 ```
 
-Here the user attaches a local SQL Portal to the alias `sqd` (which could be anything). In the future it will be also be possible to attach a specific schema, *i.e.* dataset:
+Here the user attaches a local SQD Portal to the alias `sqd` (which could be anything). In the future it will be also be possible to attach a specific schema, *i.e.* dataset:
 
 ```sql
 attach 'http://127.0.0.1:5000' as sol (type squid, schema 'solana_mainnet');
@@ -113,13 +113,10 @@ The function posts a request to the metadata server, part of the Portal. The ser
                         "type": "varchar",
                         "nullable": false
                     },
-                    ...
                 ]
             },
-            "partitionKey": [
-            ],
-            "chunks": [
-            ],
+            "partitionKey": [],
+            "chunks": [],
             "stats": {
                 "approx_num_rows": 1024
             }
@@ -297,7 +294,7 @@ The following table lists pending tasks and future research activities with an e
 | Retry                 | X      |  24         | 30/10/25 | M-10      | TS    |                             |          |
 | Multi-threaded Scan   | X      |  24         | 30/10/25 | M-11      | TS    |                             |          |
 | Special functions     | X+P+W  |  40         | 30/11/25 | M-12      | TS    |                             |          |
-| Experimental roll-out | N/A    |  N/A        | 15/12/25 | M-13      | DK    |                             |          |
+| Experimental roll-out | N/A    |  N/A        | 15/12/25 | M-13      | DZ    |                             |          |
 | Metadata handling     | P      |  N/A        | N/A      | N/A       | N/A   |                             |          |
 | Local joins           | X+P+W  |  N/A        | N/A      | N/A       | N/A   |                             |          |
 | Timestamp to Blocks   | P      |  N/A        | N/A      | N/A       | N/A   |                             |          |
