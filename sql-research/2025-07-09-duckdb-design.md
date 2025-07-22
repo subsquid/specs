@@ -54,6 +54,30 @@ The subplans are sent back to the extension from where they are finally posted t
 
 At the moment **only projections** are extracted from the plan. We still have to implement filter and other pushdowns. The next section will discuss this aspect in more detail.
 
+### Alternative
+
+There is an alternative to this design. The obvious drawbacks of the approach described above are that
+
+* We need to handle all SQL clauses known to Duckdb (*e.g.* inserts and updates that contain subqueries)
+* We need to manage the overall query state which, indeed, is a bit awkward
+* The Portal code will become quite complex, especially when we need or want many optimisations.
+
+All of these downsides go away when we handle queries on the level of individual scanners, *i.e.* per table. We would push down filters to the scanners, a feature that DuckDB already supports; scanners would then receive exactly those filters relevant for the table they handle. It would then be the scanner that sends a query plan to the Portal. This plan is much simpler than the overall query plan because it contains only one table and, with that, the Portal code can be simpler. We, further, don't need to transform the entire query to a substrait plan, but only those parts that are relevant for the related table and those parts contain only a small subset of SQL.
+
+The disadvantages of the alternative are:
+
+* We need to send more than one request to the Portal, namely one per SQD table in the whole query.
+* The Portal does not see the entire query and we, hence, lose a lot of optimisation opportunities.
+
+The first drawback is minor. The number of tables in a query is limited and such is the execution time. The second point, however, is more serious. The following query, for example, will be problematic forever:
+
+```sql
+select ...
+  from sqd.solana_mainnet.block b join sqd.solana_mainnet.transactions t on b.number = t.block_number
+ where b.timestamp between '...' and '...'
+``` 
+For joins where the block number is part of the `where` clause, DuckDB converts the join condition to a filter on the transaction table. That is exactly what we want! But for the statement above, there is no way for DuckDB to know how block numbers and timestamps are related. If we want to optimise such queries - and I believe that we do want that - we need a query coordinator analysing the whole query. That is revelant even for the case where the block number is part of the `where` clause. Since the Portal does not know that the two queries are related, it cannot take advantage of locality. It will indicate different sets of workers for the same chunk.
+
 ## DuckDB Extension
 
 The DuckDB extension has two main parts: *catalog* management and the *scanner*. The first makes SQD metadata available to DuckDB through the catalog interface, the second implements the query engine described in the previous sections.
