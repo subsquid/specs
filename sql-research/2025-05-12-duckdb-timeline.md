@@ -96,8 +96,8 @@ The overall effort for the first iteration amounts to 9 weeks. For the timeline 
 | Attach    |         40 | 23/05/25 | M1        |                             | 23/05/25 |
 | DevEnv    |         80 | 27/06/25 | M2        | iteratively with QueryPlan  | 09/07/25 |
 | QueryPlan |        160 | 18/07/25 | M3        | iteratively with DevEnv     | 09/07/25 |
-| Testing   |         80 | 31/07/25 | M4        | iteratively with all others |          |
-| Overall   |        360 | 31/07/25 |           |                             |          |
+| Testing   |         80 | 31/07/25 | M4        | iteratively with all others | 23/07/25 |
+| Overall   |        360 | 31/07/25 |           |                             | 23/07/25 |
 
 ### Milestones
 
@@ -132,12 +132,12 @@ Since users can simply create tables from select, this goal is not urgent. It ca
 
 #### M4
 
-1. [ ] Test Battery exercises functionality of DuckDB extension
+1. [X] Test Battery exercises functionality of DuckDB extension
 
-2. [ ] Test Battery exercises functionality of DuckDB extension and Server in tandem
+2. [X] Test Battery exercises functionality of DuckDB extension and Server in tandem
 
-3. [ ] Test Battery exercises
+3. [X] Test Battery exercises
    
-   * [ ] Projection (asterisk, field lists in various orders, aliases, constants, expressions, scalar functions)
+   * [X] Projection (asterisk, field lists in various orders, aliases, constants, expressions, scalar functions)
 
-   * [ ] Filter with complex conditions (and, or, not, between, in, parentheses, etc)
+   * [X] Filter with complex conditions (and, or, not, between, in, parentheses, etc)
