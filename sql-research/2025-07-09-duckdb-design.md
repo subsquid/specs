@@ -296,12 +296,12 @@ The following table lists pending tasks and future research activities with an e
 | Code Improvement      | X      |  32         | 31/07/25 | M-1       | TS    |                             | 22/07/2025 |
 | Filter pushdown       | X+P+W  |  32         | 15/08/25 | M-2       | TS    |                             |            |
 | Minor optimisations   | X+P+W  |  24         | 15/08/25 | M-3       | TS    |                             | 25/07/2025 |
-| Worker integration    | W      |  40         | 15/08/25 | M-3       | DK    |                             |            |
-| Arrow not JSON        | X+W    |  32         | 31/08/25 | M-4       | TS    |                             |            |
-| SQL completion        | X      |  80         | 15/09/25 | M-6       | TS    |                             |            |
-| Substrait not SQL     | X+P    |  24         | 30/09/25 | M-7       | TS    |                             |            |
-| Portal integration    | P      |  80         | 30/09/25 | M-8       | DK    |                             |            |
-| More testing          | X+P+W  |  40         | 15/10/25 | M-9       | TS    |                             |            |
+| Worker integration    | W      |  40         | 15/08/25 | M-3       | TS    |                             |            |
+| Portal integration    | P      |  80         | 31/08/25 | M-8       | TS    |                             |            |
+| Arrow not JSON        | X+W    |  32         | 15/09/25 | M-4       | TS    |                             |            |
+| SQL completion        | X      |  80         | 30/09/25 | M-6       | TS    |                             |            |
+| Substrait not SQL     | X+P    |  24         | 15/09/25 | M-7       | TS    |                             |            |
+| More testing          | X+P+W  |  40         | 20/10/25 | M-9       | TS    |                             |            |
 | Retry                 | X      |  24         | 30/10/25 | M-10      | TS    |                             |            |
 | Multi-threaded Scan   | X      |  24         | 30/10/25 | M-11      | TS    |                             |            |
 | Special functions     | X+P+W  |  40         | 30/11/25 | M-12      | TS    |                             |            |
@@ -460,4 +460,5 @@ Enable local joins on workers. This may be achieved with table functions similar
 #### Timestamps to Blocks
 
 Implement a search structure in the Portal that converts time ranges to block number ranges.
+
 
