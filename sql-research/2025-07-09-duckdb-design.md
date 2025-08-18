@@ -294,7 +294,7 @@ The following table lists pending tasks and future research activities with an e
 | Task                  | Where\* | Effort (h) | Finished | Milestone | Owner | Comment                     | Achieved   |
 |-----------------------|--------|------------:|----------|-----------|-------|-----------------------------|------------|
 | Code Improvement      | X      |  32         | 31/07/25 | M-1       | TS    |                             | 22/07/2025 |
-| Filter pushdown       | X+P+W  |  32         | 15/08/25 | M-2       | TS    |                             |            |
+| Filter pushdown       | X+P+W  |  32         | 15/08/25 | M-2       | TS    |                             | 13/08/2025 |
 | Minor optimisations   | X+P+W  |  24         | 15/08/25 | M-3       | TS    |                             | 25/07/2025 |
 | Worker integration    | W      |  40         | 15/08/25 | M-3       | TS    |                             |            |
 | Portal integration    | P      |  80         | 31/08/25 | M-8       | TS    |                             |            |
@@ -460,5 +460,6 @@ Enable local joins on workers. This may be achieved with table functions similar
 #### Timestamps to Blocks
 
 Implement a search structure in the Portal that converts time ranges to block number ranges.
+
 
 
