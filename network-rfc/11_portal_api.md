@@ -86,7 +86,7 @@ The client **should** pass the following request headers.
 - `Content-Type: application/json`
 
 The client **may** pass the following request headers.
-- `Accept-Encoding: gzip`. If omitted, the response will be decompressed by Nginx, making streaming less efficient.
+- `Accept-Encoding: gzip, zstd`. Zstd compression is more performant, so make sure to include it if your client supports it.
 - `Content-Encoding: gzip`, if the request body is compressed.
 
 > TODO: allow setting custom finality confirmation.
@@ -95,14 +95,15 @@ This endpoint can produce the following responses, differentiated by HTTP status
 
 #### 200 OK
 
-A list of blocks in the form of [gzipped](https://www.rfc-editor.org/rfc/rfc1952) [JSON lines](https://jsonlines.org/) body, with each JSON object representing a block.
+A list of blocks in the form of [JSON lines](https://jsonlines.org/) body, with each JSON object representing a block.\
+The response may additionally be compressed with the compression method specified in the [`Content-Encoding` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Encoding).
 
 The portal may return any number of blocks before terminating the stream. Due to the streaming nature of the HTTP protocol, it's not possible to communicate the reason of termination to the client. Clients are supposed to check the `number` (and `hash`) of the last returned block and to send subsequent requests if more blocks are needed.
 
 The returned list may contain blocks that don't match the query filters. They are added to designate the chain scanning progress.
 In particular, the first existing block with `block.number >= query.fromBlock` is always included. For every blockchain, except for Solana, the above condition can be replaced with equality, i.e., `first_returned_block.number == query.fromBlock`.
 
-Blocks in the list are guaranteed to be sequentially ordered and to belong to the same chain.
+Blocks in the list are guaranteed to be ordered by their number and to belong to the same chain.
 
 If some block `block` has been included in the response, it is also guaranteed that all the existing blocks on the chain from `query.fromBlock` to `block` matching the query are also included in the response (no matching blocks are skipped).
 
@@ -117,18 +118,7 @@ If `query.parentBlockHash` has been specified, it is also guaranteed that `first
 
 No content response, indicating that the range of blocks requested by the query lies entirely above the latest block available in the dataset.
 
-If real-time data is enabled for the dataset, the portal waits up to 5 seconds for the arrival of new blocks before returning `204`.
-
-#### Finalized head headers
-
-Both `200` and `204` responses may include `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers indicating the `number` and the `hash` of the latest finalized (unlikely to be reversed) block available in the dataset.
-
-Every returned `block` and `block` designated by `query.parentBlockHash` is guaranteed to belong to the same chain with the finalized head block. In particular:
-
-1. `X-Sqd-Finalized-Head-Hash` is a descendant of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
-2. `X-Sqd-Finalized-Head-Hash` is an ancestor of `block`, when `block.number >= X-Sqd-Finalized-Head-Number`
-
-For some datasets, it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take any actions to resolve it automatically and should signal the error to the user instead.
+The portal waits up to 5 seconds for the arrival of new blocks before returning `204`.
 
 #### 409 Conflict
 
@@ -193,23 +183,57 @@ The server failed to process the request. The client should not retry the reques
 
 ### `POST /datasets/<dataset>/finalized-stream`
 
-Same as `/datasets/<dataset>/stream`, but only returns the finalized blocks. The notion of finality here is up to the implementation and may vary between datasets. The current implementation only returns the blocks obtained from the SQD Network.
+Same as `/datasets/<dataset>/stream`, but only returns the finalized blocks. The notion of finality here is up to the implementation and may vary between datasets.
+
+This endpoint never returns HTTP 409.
+
+### `POST /datasets/<dataset>/archival-stream`
+
+Same as `/datasets/<dataset>/stream`, but only uses SQD Network as the data source.
+
+This endpoint never returns HTTP 409.
 
 ### `GET /datasets/<dataset>/head`
 
-Returns JSON object with `.number` and `.hash` of the highest block available in the dataset. When no block is available, returns _`null`_.
+Returns a JSON object with `.number` and `.hash` of the highest block available in the dataset. When no block is available, returns _`null`_.
 
 This endpoint is supposed to be used for diagnostic purposes.
 
 ### `GET /datasets/<dataset>/finalized-head`
 
-Returns JSON object with `.number` and `.hash` of the highest finalized block available in the dataset. When no finalized block is available, returns _`null`_.
+Returns a JSON object with `.number` and `.hash` of the highest finalized block available in the dataset. When no finalized block is available, returns _`null`_.
 
 This endpoint is supposed to be used for diagnostic purposes.
 
+### `GET /datasets/<dataset>/archival-head`
+
+Returns a JSON object with `.number` and `.hash` of the highest block available in the SQD Network or _`null`_ if the datasets are still loading.
+
+This endpoint is supposed to be used for diagnostic purposes.
+
+## Additional response headers
+
+### Finalized head headers
+
+Successful responses for `/stream`, `/finalized-stream` and `/archival-stream` endpoints may include `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers indicating the `number` and the `hash` of the latest finalized (unlikely to be reversed) block available in the dataset.
+
+Every returned `block` and `block` designated by `query.parentBlockHash` is guaranteed to belong to the same chain with the finalized head block. In particular:
+
+1. `X-Sqd-Finalized-Head-Hash` is a descendant of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
+2. `X-Sqd-Finalized-Head-Hash` is an ancestor of `block`, when `block.number >= X-Sqd-Finalized-Head-Number`
+
+For some datasets, it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take any actions to resolve it automatically and should signal the error to the user instead.
+
+### Head headers
+
+Successful responses to `/stream`, `/finalized-stream` and `/archival-stream` requests may include `X-Sqd-Head-Number` header indicating the number of the last block currently available for streaming with the used endpoint.
+
+This header may be used to display syncing progress information to the client. Note however, that this value may be not synchronized across all portal instances so it may fluctuate when routing requests via the load balancer.
+
 ## Deprecated endpoints
 
-These endpoints are preserved for compatibility with the old clients and should not be used.
+These endpoints are preserved for compatibility with the old clients and should not be used.\
+They will be removed in the next stable release.
 
 ### `GET /datasets/<dataset>/finalized-stream/height`
 
