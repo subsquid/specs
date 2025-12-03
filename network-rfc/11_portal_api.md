@@ -211,6 +211,12 @@ Returns a JSON object with `.number` and `.hash` of the highest block available 
 
 This endpoint is supposed to be used for diagnostic purposes.
 
+### `GET /datasets/<dataset>/resolve-timestamp/<timestamp>`
+
+Accepts a unix timestamp (in seconds) and returns a single number — the number of the first block with timestamp greater or equal to the requested one.
+
+Returns "404 Not Found" if such block doesn't exist.
+
 ## Additional response headers
 
 ### Finalized head headers
