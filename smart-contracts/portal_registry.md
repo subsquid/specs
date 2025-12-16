@@ -38,7 +38,7 @@ Every SQD token stored in the contract is (virtually) in one of three states:
 - **Locked** — a withdrawal was requested and the token is not used for CU computation now
 - **Transferable** — the token is sitting in the contract and can be withdrawn at any moment
 
-When an operator wants to stop a portal and unlock tokens, only a limited amount is unlocked immediately; the remaining tokens are set to the _locked_ state.
+When an operator wants to unlock tokens, they are set to the _locked_ state.
 They are then converted from _locked_ to _transferable_ at the fixed rate per block. Transferable tokens can be claimed by calling `withdraw`.
 This is needed to prevent immediate massive withdrawals.
 
@@ -47,12 +47,6 @@ This is needed to prevent immediate massive withdrawals.
 When allocating tokens to a cluster (making them _active_), tokens from the _locked_ balance are used first, followed by _transferable_ tokens. This allows restaking tokens between clusters without any limitations.
 
 Additionally, the user may request to withdraw some _locked_ tokens immediately by paying a fee. This allows quickly freeing up tokens if needed.
-
-#### Interaction with portal pools
-
-The borrowing pool contract will need to withdraw funds from this contract.
-If this contract allows $Q$ tokens to be withdrawn per block and someone owns $k\%$ of the pool, they can withdraw $k / 100 \times Q$ per block, guaranteeing that even if everyone starts to withdraw at the same time, they won't hit the limit of the `PortalRegistry` contract.
-
 
 ### Registration
 
@@ -96,12 +90,10 @@ function withdrawImmediate(amount: number)
 function getComputeUnitsPerToken(): number
 function getMinStake(): number
 function getWithdrawalLimitPerBlock(): number
-function getImmediateWithdrawalAllowance(): number
 
 function setComputeUnitsPerToken(n: number)
 function setMinStake(tokens: number)
 function setWithdrawalLimitPerBlock(tokensPerBlock: number)
-function setImmediateWithdrawalAllowance(tokens: number)
 function setMaxPortalsPerCluster(n: number)
 function setMaxClustersPerWallet(n: number)
 function setWithdrawalFee(ratio: number)
@@ -110,7 +102,7 @@ function setImmediateWithdrawalFee(ratio: number)
 
 ### Worker API
 
-#### `getPortalClusters`
+#### `getPortalClusters(worker_id: PeerId): PortalCluster[]`
 
 Each worker periodically reads the contract state via RPC to determine how many CUs each active portal cluster currently has allocated _to this worker_. The numbers may be different for different workers if a custom [allocation strategy](#allocation-strategies) is used.
 
@@ -179,10 +171,6 @@ If the cluster's stake is below this value, it's granted zero compute units and 
 #### `setWithdrawalLimitPerBlock(tokensPerBlock: number)`
 
 Sets how many tokens convert from _locked_ to _transferable_ state per block.
-
-#### `setImmediateWithdrawalAllowance(tokens: number)`
-
-Sets how many tokens are moved to the _transferable_ state immediately upon the withdrawal request.
 
 #### `setMaxPortalsPerCluster(n: number)`
 
