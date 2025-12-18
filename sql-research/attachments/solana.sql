@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------------------------------------
 TYPE block_number AS UINT64;
 TYPE unix_timestamp AS TIMESTAMP(8){unit=second};
-TYPE hash_as_hex AS CHAR(64);
+TYPE hash_as_hex AS CHAR(64); -- or: hash_as_base64 as VARCHAR(44)
 
 TABLE blocks (
   number        block_number PRIMARY KEY, --#key-time-aligned
