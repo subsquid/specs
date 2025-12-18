@@ -6,7 +6,7 @@ TYPE unix_timestamp AS TIMESTAMP(8){unit=second};
 TYPE hash_as_hex AS CHAR(64); -- or: hash_as_base64 as VARCHAR(44)
 
 TABLE blocks (
-  number        block_number PRIMARY KEY, --#key-time-aligned
+  number        block_number PRIMARY KEY, --#timeseries
   hash          hash_as_hex,
   parent_number block_number,
   parent_hash   hash_as_hex,
@@ -36,7 +36,7 @@ TYPE loaded_addresses_st AS STRUCT(
 );
 
 TABLE transactions (
-    block_number                   block_number PRIMARY KEY, --#key-time-aligned
+    block_number                   block_number PRIMARY KEY, --#timeseries
     transaction_index              tx_index     PRIMARY KEY,
     version                        tx_version,
     account_keys                   key_list,
