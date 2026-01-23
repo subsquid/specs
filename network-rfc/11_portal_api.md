@@ -244,10 +244,6 @@ Note that the first available block is not always 0.
 
 Same as `/datasets/<dataset>/finalized-stream/height`
 
-### `GET /datasets/<dataset>/<start_block>/worker`
-
-Gets the worker URL for querying the dataset starting from the given block.
-
-### `GET /datasets/<base64_id>/query/<worker_id>`
+### `GET /datasets/<dataset>/query/<worker_id>`
 
 Sends the query to the worker. The query is passed in the request body.
