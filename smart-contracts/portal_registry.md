@@ -77,7 +77,6 @@ type PortalCluster = {
 function getPortalClusters(worker_id: PeerId): PortalCluster[]
 function getActivePortals(): PeerId[]
 
-function stake(amount: number): ClusterId
 function createCluster(): ClusterId
 function addStake(clusterId: ClusterId, amount: number)
 function removeStake(clusterId: ClusterId, amount: number)
@@ -91,7 +90,7 @@ function getComputeUnitsPerToken(): number
 function getMinStake(): number
 function getWithdrawalLimitPerBlock(): number
 
-function setComputeUnitsPerToken(n: number)
+function setComputeUnitsPerToken(bp: number)
 function setMinStake(tokens: number)
 function setWithdrawalLimitPerBlock(tokensPerBlock: number)
 function setMaxPortalsPerCluster(n: number)
@@ -125,10 +124,6 @@ The cluster is created with no peer IDs assigned to it.
 
 The `amount` of SQD tokens is transferred along with this call and is stored on the contract in the [_active_](#locking-tokens) state, assigned to the specified cluster.
 
-#### `stake(amount: number): ClusterId`
-
-A convenience method to create a new cluster and add stake to it immediately.
-
 #### `removeStake(clusterId: ClusterId, amount: number)`
 
 Requests withdrawal of the specified amount of tokens from the given cluster.
@@ -158,9 +153,9 @@ The collected fee is sent to the contract owner.
 
 ### Admin API
 
-#### `setComputeUnitsPerToken(n: number)`
+#### `setComputeUnitsPerToken(bp: number)`
 
-Sets how many compute units are allocated per single SQD token locked in the contract.
+Sets how many compute units are allocated per single SQD token locked in the contract. Measured in basis points.
 
 #### `setMinStake(tokens: number)`
 
@@ -182,10 +177,10 @@ Sets the maximum number of clusters that can be created by a single wallet.
 
 #### `setWithdrawalFee(ratio: number)`
 
-Sets the fee ratio (e.g., `0.01` for 1%) applied to all withdrawals from the contract. The fee is deducted from the withdrawn amount and sent to the contract owner.
+Sets the fee ratio in basis points (e.g., `100` for 1%) applied to all withdrawals from the contract. The fee is deducted from the withdrawn amount and sent to the contract owner.
 
 The contract is initialized with zero.
 
 #### `setImmediateWithdrawalFee(ratio: number)`
 
-Sets the fee ratio (e.g., `0.2` for 20%) applied to every [immediate withdrawal](#withdrawimmediateamount-number) from the contract. The fee is deducted from the withdrawn amount and sent to the contract owner.
+Sets the fee ratio in basis points (e.g., `2000` for 20%) applied to every [immediate withdrawal](#withdrawimmediateamount-number) from the contract. The fee is deducted from the withdrawn amount and sent to the contract owner.
