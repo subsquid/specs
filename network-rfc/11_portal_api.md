@@ -32,6 +32,8 @@ Response example:
 
 Lists the existing datasets as a JSON array. See [`/metadata` endpoint](#get-datasetsdatasetmetadata) for the field description.
 
+Supports `expand[]` query parameter to include additional metadata fields (see [Additional metadata fields](#additional-metadata-fields-experimental)).
+
 Response example:
 ```json
 [
@@ -49,13 +51,15 @@ Response example:
 ]
 ```
 
-### `GET /datasets/<dataset>/metadata`
+### `GET /datasets/<dataset>`
 
 Responds with the information describing the dataset as a JSON object. Contains at least the following fields:
 - `dataset` — the default name used to reference this dataset.
 - `aliases` — an array of alternative names that can be used interchangeably with the default name, e.g., in the HTTP endpoints.
 - `real_time`, indicating whether the portal has real-time data for this dataset.
 - `start_block` — the block number of the first known block in the dataset. The client should not request any blocks below this number.
+
+Supports `expand[]` query parameter to include additional metadata fields (see [Additional metadata fields](#additional-metadata-fields-experimental)).
 
 Response example:
 ```json
@@ -64,6 +68,33 @@ Response example:
   "aliases": ["eth-main"],
   "start_block": 0,
   "real_time": false
+}
+```
+
+#### Additional metadata fields (EXPERIMENTAL)
+
+Both `/datasets` and `/datasets/<dataset>` endpoints support the `expand[]` query parameter, which controls the inclusion of additional metadata fields.
+
+- By default (no `expand[]` parameters), only the base fields (`dataset`, `aliases`, `real_time`, `start_block`) are returned.
+- Each `expand[]=<field>` parameter requests a specific top-level metadata field to be included in the response. Multiple fields can be requested by repeating the parameter.
+
+Example request: `GET /datasets/<dataset>?expand[]=metadata`
+
+Example response:
+```json
+{
+  "dataset": "ethereum-mainnet",
+  "aliases": [],
+  "real_time": true,
+  "metadata": {
+    "display_name": "Ethereum",
+    "logo_url": "https://cdn.subsquid.io/img/networks/ethereum.svg",
+    "type": "testnet",
+    "kind": "evm",
+    "evm": {
+      "chain_id": 1
+    }
+  }
 }
 ```
 
@@ -247,3 +278,7 @@ Same as `/datasets/<dataset>/finalized-stream/height`
 ### `GET /datasets/<dataset>/query/<worker_id>`
 
 Sends the query to the worker. The query is passed in the request body.
+
+### `GET /datasets/<dataset>/metadata`
+
+Same as `/datasets/<dataset>`
