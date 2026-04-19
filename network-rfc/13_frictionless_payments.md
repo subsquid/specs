@@ -87,7 +87,6 @@ Apple Pay alone delivered an average 22.3% conversion uplift and 22.5% revenue u
 - **Baymard cart abandonment data**: [Baymard — Cart Abandonment Rate Statistics](https://baymard.com/lists/cart-abandonment-rate)
 - **Baymard checkout usability research**: [Baymard — Checkout Usability Research](https://baymard.com/research/checkout-usability)
 - **Stripe payment method conversion study**: [Stripe — Testing the conversion impact of 50+ global payment methods](https://stripe.com/blog/testing-the-conversion-impact-of-50-plus-global-payment-methods)
-- **Apple Pay conversion guidance**: [Apple Developer — Apple Pay Overview](https://developer.apple.com/apple-pay/)
 
 Because the current SQD participation journey is more complex than a typical ecommerce checkout, these benchmarks should be treated as a conservative floor, not a ceiling.
 
