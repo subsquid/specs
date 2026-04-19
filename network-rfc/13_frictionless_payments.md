@@ -90,8 +90,9 @@ Apple Pay alone delivered an average 22.3% conversion uplift and 22.5% revenue u
 
 Because the current SQD participation journey is more complex than a typical ecommerce checkout, these benchmarks should be treated as a conservative floor, not a ceiling.
 
-<img width="1600" height="967" alt="image" src="https://github.com/user-attachments/assets/70dd842e-dbb4-4db5-ba51-9af6cce009a1" />
-
+<p align="center">
+  <img width="760" alt="Conversion benchmark chart" src="https://github.com/user-attachments/assets/25c043e6-a580-4e29-9a09-150ff3e4e737" />
+</p>
 
 ## One-line takeaway
 
