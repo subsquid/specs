@@ -226,6 +226,14 @@ Response example:
 }
 ```
 
+For endpoint-specific errors, the response body is a JSON object with a `message` field:
+
+```json
+{
+  "message": "No chunk found for timestamp"
+}
+```
+
 #### 200 OK
 
 The response body is a JSON object with a single `block_number` field.
