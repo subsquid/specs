@@ -211,6 +211,49 @@ Returns a JSON object with `.number` and `.hash` of the highest block available 
 
 This endpoint is supposed to be used for diagnostic purposes.
 
+### `GET /datasets/<dataset>/timestamps/<timestamp>/block`
+
+Returns the number of the first block whose timestamp is greater than or equal to `<timestamp>`.
+
+The `<timestamp>` path parameter is a Unix timestamp in seconds.
+
+When both SQD Network and real-time data are configured for the dataset, the portal first tries the SQD Network data and falls back to real-time data when the timestamp is not found in the archived range.
+
+Response example:
+```json
+{
+  "block_number": 21780872
+}
+```
+
+For endpoint-specific errors, the response body is a JSON object with a `message` field:
+
+```json
+{
+  "message": "No chunk found for timestamp"
+}
+```
+
+#### 200 OK
+
+The response body is a JSON object with a single `block_number` field.
+
+#### 404 Not Found
+
+Possible causes:
+
+- the dataset has not been found,
+- no block is available for the given timestamp,
+- the timestamp is outside the available block range.
+
+#### 503 Service Unavailable
+
+The portal could not query the underlying data source at the moment. The client may retry the request later.
+
+#### 500 Internal Server Error
+
+The server failed to process the timestamp lookup. The client should not retry the request because it may be causing the error.
+
 ## Additional response headers
 
 ### Finalized head headers
