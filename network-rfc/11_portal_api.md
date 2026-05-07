@@ -211,25 +211,6 @@ Returns a JSON object with `.number` and `.hash` of the highest block available 
 
 This endpoint is supposed to be used for diagnostic purposes.
 
-## Additional response headers
-
-### Finalized head headers
-
-Successful responses for `/stream`, `/finalized-stream` and `/archival-stream` endpoints may include `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers indicating the `number` and the `hash` of the latest finalized (unlikely to be reversed) block available in the dataset.
-
-Every returned `block` and `block` designated by `query.parentBlockHash` is guaranteed to belong to the same chain with the finalized head block. In particular:
-
-1. `X-Sqd-Finalized-Head-Hash` is a descendant of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
-2. `X-Sqd-Finalized-Head-Hash` is an ancestor of `block`, when `block.number >= X-Sqd-Finalized-Head-Number`
-
-For some datasets, it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take any actions to resolve it automatically and should signal the error to the user instead.
-
-### Head headers
-
-Successful responses to `/stream`, `/finalized-stream` and `/archival-stream` requests may include `X-Sqd-Head-Number` header indicating the number of the last block currently available for streaming with the used endpoint.
-
-This header may be used to display syncing progress information to the client. Note however, that this value may be not synchronized across all portal instances so it may fluctuate when routing requests via the load balancer.
-
 ### `GET /datasets/<dataset>/timestamps/<timestamp>/block`
 
 Returns the number of the first block whose timestamp is greater than or equal to `<timestamp>`.
@@ -263,6 +244,25 @@ The portal could not query the underlying data source at the moment. The client 
 #### 500 Internal Server Error
 
 The server failed to process the timestamp lookup. The client should not retry the request because it may be causing the error.
+
+## Additional response headers
+
+### Finalized head headers
+
+Successful responses for `/stream`, `/finalized-stream` and `/archival-stream` endpoints may include `X-Sqd-Finalized-Head-Number` and `X-Sqd-Finalized-Head-Hash` headers indicating the `number` and the `hash` of the latest finalized (unlikely to be reversed) block available in the dataset.
+
+Every returned `block` and `block` designated by `query.parentBlockHash` is guaranteed to belong to the same chain with the finalized head block. In particular:
+
+1. `X-Sqd-Finalized-Head-Hash` is a descendant of `block`, when `block.number <= X-Sqd-Finalized-Head-Number`
+2. `X-Sqd-Finalized-Head-Hash` is an ancestor of `block`, when `block.number >= X-Sqd-Finalized-Head-Number`
+
+For some datasets, it's not possible to guarantee finality for sure, but if the client encounters a reorg deeper than the finalization point, it shouldn't take any actions to resolve it automatically and should signal the error to the user instead.
+
+### Head headers
+
+Successful responses to `/stream`, `/finalized-stream` and `/archival-stream` requests may include `X-Sqd-Head-Number` header indicating the number of the last block currently available for streaming with the used endpoint.
+
+This header may be used to display syncing progress information to the client. Note however, that this value may be not synchronized across all portal instances so it may fluctuate when routing requests via the load balancer.
 
 ## Deprecated endpoints
 
