@@ -224,10 +224,11 @@ Response example:
 {
   "block_number": 21780872
 }
+```
 
 #### 200 OK
 
-The response body is a JSON object with a single block_number field.
+The response body is a JSON object with a single `block_number` field.
 
 #### 404 Not Found
 
